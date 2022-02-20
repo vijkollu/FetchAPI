@@ -1,0 +1,87 @@
+openapi: 3.0.0  
+info:  
+  title: Student API  
+  description: Student API by javaTpoint.com  
+  contact:  
+    name: javatpoint  
+    url: http://javatpoint.com  
+  version: 1.0.0  
+server:  
+ -url: http://devapi.com  
+paths:  
+  /student:  
+    description: Student Resource  
+    get:  
+     description: Operation to fetch the Student data  
+     parameters:  
+      - in: query  
+        name: studentname  
+        required: true  
+        schema:  
+         type: string  
+         example: John  
+     responses:  
+      200:  
+        description: Successful Response  
+        content:   
+          application/json:  
+           schema:  
+            type: array  
+            items:  
+              properties:  
+               Student ID:  
+                type: integer  
+                example: 1  
+               Student Name:  
+                type: string  
+                example: Peter  
+               Student Remarks:  
+                type: string  
+                example: High Grade Student  
+    post:  
+      description: Add a new Student  
+      requestBody:  
+        content:  
+          application/json:  
+            schema:  
+              type: object  
+              properties:  
+                  Student ID:  
+                    type: integer  
+                    example: 1  
+                  Student Name:  
+                    type: string  
+                    example: Peter  
+                  Student Remarks:  
+                    type: string  
+                    example: High Grade Student  
+      responses:  
+        201:  
+          description: Record successfully added  
+  /student{id}:  
+    description: Retrieve the Student based on a Path Parameter  
+    get:  
+      parameters:  
+        - in: path  
+          name: id  
+          required: true  
+          schema:  
+           type: integer   
+      responses:  
+        200:  
+          description: Success response with a path parameter  
+          content:  
+            application/json:  
+             schema:     
+              type: array  
+              items:  
+               properties:  
+                Student ID:  
+                 type: integer  
+                 example: 1  
+                Student Name:  
+                 type: string  
+                 example: Peter  
+                Student Remarks:  
+                 type: string  
+                 example: High Grade Student  
