@@ -1,4 +1,4 @@
-package com.example.demo.imple;
+package com.example.demo.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,6 +19,9 @@ import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
@@ -62,7 +65,8 @@ public class FetchRAML {
 		}
 	}
 
-	private static String findRamllocate(String username, String repository) throws IOException, URISyntaxException {
+	private static String findRamllocate(String username, String repository, String token)
+			throws IOException, URISyntaxException {
 
 		String locateDir = "";
 		String locateRAML = "";
@@ -70,12 +74,13 @@ public class FetchRAML {
 		// To print response JSON, using GSON. Any other JSON parser can be used here.
 		gson = new GsonBuilder().setPrettyPrinting().create();
 
-		Map jsonMap = makeRESTCall("https://api.github.com/repos/" + username + "/" + repository + "/branches/main");
+		Map jsonMap = makeRESTCall("https://api.github.com/repos/" + username + "/" + repository + "/branches/main",
+				token);
 
 		String treeApiUrl = gson.toJsonTree(jsonMap).getAsJsonObject().get("commit").getAsJsonObject().get("commit")
 				.getAsJsonObject().get("tree").getAsJsonObject().get("url").getAsString();
 
-		Map jsonTreeMap = makeRESTCall(treeApiUrl + "?recursive=1");
+		Map jsonTreeMap = makeRESTCall(treeApiUrl + "?recursive=1", token);
 
 		for (Object obj : ((List) jsonTreeMap.get("tree"))) {
 
@@ -100,22 +105,24 @@ public class FetchRAML {
 		return null;
 	}
 
-	private static Map makeRESTCall(String restUrl) throws ClientProtocolException, IOException {
+	private static Map makeRESTCall(String restUrl, String token) throws ClientProtocolException, IOException {
 
-		Content content = Request.Get(restUrl).execute().returnContent();
+		Request request = Request.Get(restUrl).addHeader("Authorization", "Bearer " + token);
+
+		Content content = request.execute().returnContent();
 		String jsonString = content.asString();
 		System.out.println("content = " + jsonString);
 		Map jsonMap = gson.fromJson(jsonString, Map.class);
 		return jsonMap;
 	}
 
-	public static void downloadRAML(String username, String repo) throws IOException, URISyntaxException {
+	public static void downloadRAML(String username, String repo, String token) throws IOException, URISyntaxException {
 
-		String foundRaml = findRamllocate(username, repo);
+		String foundRaml = findRamllocate(username, repo, token);
 		String downloadUrl = "";
 		if (foundRaml != null) {
 
-			downloadUrl = FetchDonwloadUrl(username, repo, foundRaml);
+			downloadUrl = FetchDonwloadUrl(username, repo, foundRaml, token);
 
 			downloadRaml(downloadUrl);
 
@@ -125,20 +132,25 @@ public class FetchRAML {
 
 	}
 
-	private static String FetchDonwloadUrl(String username, String repo, String foundRaml)
+	private static String FetchDonwloadUrl(String username, String repo, String foundRaml, String token)
 			throws IOException, URISyntaxException {
 		// TODO Auto-generated method stub
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + "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");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add("Authorization", "Bearer " + token);
 
-		HttpEntity<String> entity = new HttpEntity<String>(headers);
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+
 		RestTemplate restTemplate = new RestTemplate();
 
-		List<Map> response = restTemplate.getForObject(
-				"https://api.github.com/repos/" + username + "/" + repo + "/contents/" + foundRaml, List.class);
+		ResponseEntity<List> response = restTemplate.exchange(
+				"https://api.github.com/repos/" + username + "/" + repo + "/contents/" + foundRaml, HttpMethod.GET,
+				entity, List.class);
 
-		for (Map fileMetaData : response) {
+		List<Map> responseMap = response.getBody();
+
+		for (Map fileMetaData : responseMap) {
 
 			String fileName = (String) fileMetaData.get("name");
 
@@ -155,15 +167,9 @@ public class FetchRAML {
 
 		URL url = new URL(sUrl);
 
-		File file = new File("C://Users/vijkollu/Documents/mYDownload.yaml");
+		File file = new File("C://Users/vijkollu/Documents/checkDownload.yaml");
 
 		FetchRAML.copyURLToFile(url, file);
-
-	}
-
-	public static void main(String args[]) throws IOException, URISyntaxException {
-
-		downloadRAML("vijkollu", "FetchAPI");
 
 	}
 

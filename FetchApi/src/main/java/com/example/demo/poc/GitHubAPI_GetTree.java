@@ -1,13 +1,15 @@
-package com.example.demo.diff;
+package com.example.demo.poc;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
+
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,7 +31,7 @@ public class GitHubAPI_GetTree {
 		 * 
 		 * https://api.github.com/repos/vijkollu/FetchAPI/branches/main
 		 */
-		Map jsonMap = makeRESTCall("https://api.github.com/repos/vijkollu/FetchAPI/branches/main");
+		Map jsonMap = makeRESTCall("https://api.github.com/repos/vijkollu/Excel/branches/main");
 		System.out.println(
 				"Branches API Response = \n<API RESPONSE START>\n " + gson.toJson(jsonMap) + "\n<API RESPONSE END>\n");
 
@@ -71,7 +73,12 @@ public class GitHubAPI_GetTree {
 
 	private static Map makeRESTCall(String restUrl) throws ClientProtocolException, IOException {
 		
-		Content content = Request.Get(restUrl).execute().returnContent();
+
+		
+		
+		Request request= Request.Get(restUrl).addHeader("Authorization", "Bearer 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");
+				
+		Content content =request.execute().returnContent();
 		String jsonString = content.asString();
 		System.out.println("content = " + jsonString);
 
