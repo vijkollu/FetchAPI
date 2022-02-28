@@ -15,7 +15,7 @@ public class FetchApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FetchApiApplication.class, args);
 		try {
-			FetchRAML.downloadRAML("vijkollu","Excel","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");
+			FetchRAML.downloadRAML("vijkollu","Excel","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");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
