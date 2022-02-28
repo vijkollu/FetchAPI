@@ -6,11 +6,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
@@ -21,16 +27,35 @@ public class GitHubAPI_GetContent {
 	public static void main(String[] args) throws IOException, URISyntaxException {
 
 		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer "+"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");
+		
+		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		RestTemplate restTemplate = new RestTemplate();
+		
 		/*
 		 * List<Map> response = restTemplate.getForObject(
-		 * "https://api.github.com/repos/{vijkollu}/{repo}/contents?ref={branch}",
-		 * List.class, "vijkollu", "demo", "main");
+		 * "https://api.github.com/repos/{vijkollu}/{repo}/contents", List.class,
+		 * "vijkollu", "excel",entity);
 		 */
+		  
+		  List<Map> response = restTemplate.getForObject(
+				  "https://api.github.com/repos/vijkollu/excel/contents?Authorization=Bearer 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",
+				  List.class);
+		  
+		  
+		 
 		
-		List<Map> response = restTemplate.getForObject(
-				 "https://api.github.com/repos/{owner}/{repo}/contents",
-				List.class, "vijkollu", "FirstApplicationBoot");
+		//https://api.github.com/repos/vijkollu/FetchAPI/contents/FetchApi/src/main/resources/openapi.yaml?ref=main
+		
+		/*
+		 * List<Map> response = restTemplate.getForObject(
+		 * "https://api.github.com/repos/vijkollu/FetchAPI/contents/FetchApi/src/main/resources/",
+		 * List.class);
+		 */
+		//FetchAPI/FetchApi/src/main/resources/
+		
+		//List<Map> response = restTemplate.getForObject("https://api.github.com/repos/vijkollu/FetchAPI/contents/FetchApi/src/main/resources/openapi.yaml",List.class);
 
 		// To print response JSON, using GSON. Any other JSON parser can be used here.
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();

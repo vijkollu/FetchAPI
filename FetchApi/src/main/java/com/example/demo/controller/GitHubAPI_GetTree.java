@@ -18,14 +18,19 @@ public class GitHubAPI_GetTree {
 
 	public static void main(String[] args) throws IOException, URISyntaxException {
 
+		
+		
+		try {
 		// To print response JSON, using GSON. Any other JSON parser can be used here.
 		gson = new GsonBuilder().setPrettyPrinting().create();
 
 		/*
 		 * Call GitHub branches API REST end point & get JSON response. This response
 		 * will also provide URL with treeSha for Tree REST endpoint.
+		 * 
+		 * https://api.github.com/repos/vijkollu/FetchAPI/branches/main
 		 */
-		Map jsonMap = makeRESTCall("https://api.github.com/repos/RaviKharatmal/test/branches/develop");
+		Map jsonMap = makeRESTCall("https://api.github.com/repos/vijkollu/excel/branches/main");
 		System.out.println(
 				"Branches API Response = \n<API RESPONSE START>\n " + gson.toJson(jsonMap) + "\n<API RESPONSE END>\n");
 
@@ -62,6 +67,17 @@ public class GitHubAPI_GetTree {
 						"File = " + fileMetadata.get("path") + " | Size = " + fileMetadata.get("size") + " Bytes");
 			}
 		}
+		
+		
+		}catch(Exception e) {
+			System.out.println(e.getLocalizedMessage()+"::::"+e.getMessage());
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -71,7 +87,8 @@ public class GitHubAPI_GetTree {
 	 * Then parse response using GSON & return parsed Map.
 	 */
 	private static Map makeRESTCall(String restUrl) throws ClientProtocolException, IOException {
-		Content content = Request.Get(restUrl).execute().returnContent();
+		
+		Content content = Request.Get(restUrl+"?bearer=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").execute().returnContent();
 		String jsonString = content.asString();
 		System.out.println("content = " + jsonString);
 
